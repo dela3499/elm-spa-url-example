@@ -9,6 +9,27 @@ import String
 import Debug
 import UrlParser exposing (int, format, oneOf, s, parse, (</>))
 
+{-
+  
+  The approach to handling urls is fairly laborious. 
+  
+  # Initial pageload
+  1. I want to host on Github pages, so non-root urls return a 404
+  2. So, a custom 404 is returned, with a redirect to the root page, 
+      with the non-root portion of the url represented as a query string.
+  3. The root/index file is served, and a script uses the query string to 
+      change the displayed url. 
+  4. The url is then sent to Elm to update its model
+
+  # Changing pages from within Elm app
+  1. A msg is produced which updates the model, and also sends a new url 
+      through a port. JS updates the url (via pushState)
+
+  # Changing pages with forward and back
+  1. A popState event is fired, and the current url is sent to Elm through a port
+
+  -}
+
 
 main = 
   Html.program
