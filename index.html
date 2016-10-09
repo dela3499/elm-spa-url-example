@@ -42,10 +42,23 @@
 	    <!-- End Single Page Apps for GitHub Pages -->
 
 		<script>
-		    var div = document.getElementById('main'),
-		    	app = Elm.App.embed(div);
-		    app.ports.initialUrl.send(window.location.pathname); 
-		    // history.pushState({}, '', '/bob/1'); for updating url manually
+	    // Embed Elm App
+	    var div = document.getElementById('main'),
+	    	app = Elm.App.embed(div);
+	    
+	   	// Notify Elm of initial url
+	    app.ports.urlUpdate.send(window.location.pathname);
+
+	    // Change Url (pathname) when Elm page changes
+	    app.ports.changeUrl.subscribe(function(pathname) {
+	    	history.pushState({}, '', pathname);
+	    });		    
+
+	    // Notify Elm when user goes backward or forward in history
+			window.addEventListener('popstate', function(event) {
+			  app.ports.urlUpdate.send(window.location.pathname);
+			});
+
 		</script>
 	</body>
 

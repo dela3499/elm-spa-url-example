@@ -1,6 +1,7 @@
 port module App exposing (..)
 
-import Html exposing (Html, text)
+import Html exposing ( Html, text, div, span, input, textarea, img, table, tr, th, td, i, p, a )
+import Html.Events exposing ( on, targetValue, onClick, onDoubleClick, onInput )
 import Html.App as Html
 import Result
 import List
@@ -18,13 +19,13 @@ main =
     }
 
 
-port initialUrl : ( String -> msg ) -> Sub msg
-
+port urlUpdate : ( String -> msg ) -> Sub msg
+port changeUrl : String -> Cmd msg 
 
 subscriptions: Model -> Sub Msg
 subscriptions model = 
   Sub.batch
-    [ initialUrl ( \url -> UrlUpdate url )]    
+    [ urlUpdate ( \url -> UrlUpdate url )]    
 
 
 type Page 
@@ -33,14 +34,20 @@ type Page
   | Blog Int
 
 type alias Model = 
-  { page : Page}
+  { page : Page
+  , count : Int
+  }
 
 initialModel = 
-  { page = Home }
+  { page = Home
+  , count = 0 
+  }
 
 type Msg
   = NoMsg
   | UrlUpdate String
+  | ChangePage Page
+  | Increment
 
 update: Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -48,24 +55,57 @@ update msg model =
     NoMsg -> 
       ( model, Cmd.none )
     UrlUpdate pathname -> 
-      let debug = Debug.log "pathname" pathname
-          pageParser =
+      let pageParser =
             oneOf
               [ format About (s "about")
               , format Blog (s "blog" </> int)
+              , format Home (s "home")
+              , format Home (s "")
               ]
           -- weird. Starting "/" in pathname isn't parsed correctly. (Docs show it working)
           pathname' = String.dropLeft 1 pathname
           result = parse identity pageParser pathname' 
-          debug2 = Debug.log "result" result
+          x = Debug.log "result" result
       in case result of 
         Ok page -> 
           ({ model | page = page }, Cmd.none)
         Err error -> 
-          (model, Cmd.none)      
+          (model, Cmd.none)
+    ChangePage page -> 
+      let url = 
+            case page of
+              Home -> "/home"
+              About -> "/about"
+              Blog int -> "/blog/" ++ (toString int)
+      in 
+        ({ model | page = page }, changeUrl url)  
+    Increment -> 
+      ( { model | count = model.count + 1 }, Cmd.none )
 
 
 view : Model -> Html Msg
 view model =
-  model |> toString |> text 
+  div
+    []
+    [ div
+        [ onClick (ChangePage Home) ]
+        [ text "Home" ]
+    , div
+        [ onClick (ChangePage About) ]
+        [ text "About" ]
+    , div
+        [ onClick (ChangePage (Blog 1)) ]
+        [ text "Blog 1" ]
+    , div
+        [ onClick (ChangePage (Blog 2)) ]
+        [ text "Blog 2" ]
+    , div
+        [ onClick (ChangePage (Blog 3)) ]
+        [ text "Blog 3" ]   
+    , div
+        [ onClick (Increment) ]
+        [ text "Increment" ]    
+    , model |> toString |> text 
+    ]
+  
   

@@ -7444,6 +7444,107 @@ var _elm_lang$html$Html_App$beginnerProgram = function (_p1) {
 };
 var _elm_lang$html$Html_App$map = _elm_lang$virtual_dom$VirtualDom$map;
 
+var _elm_lang$html$Html_Events$keyCode = A2(_elm_lang$core$Json_Decode_ops[':='], 'keyCode', _elm_lang$core$Json_Decode$int);
+var _elm_lang$html$Html_Events$targetChecked = A2(
+	_elm_lang$core$Json_Decode$at,
+	_elm_lang$core$Native_List.fromArray(
+		['target', 'checked']),
+	_elm_lang$core$Json_Decode$bool);
+var _elm_lang$html$Html_Events$targetValue = A2(
+	_elm_lang$core$Json_Decode$at,
+	_elm_lang$core$Native_List.fromArray(
+		['target', 'value']),
+	_elm_lang$core$Json_Decode$string);
+var _elm_lang$html$Html_Events$defaultOptions = _elm_lang$virtual_dom$VirtualDom$defaultOptions;
+var _elm_lang$html$Html_Events$onWithOptions = _elm_lang$virtual_dom$VirtualDom$onWithOptions;
+var _elm_lang$html$Html_Events$on = _elm_lang$virtual_dom$VirtualDom$on;
+var _elm_lang$html$Html_Events$onFocus = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'focus',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onBlur = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'blur',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onSubmitOptions = _elm_lang$core$Native_Utils.update(
+	_elm_lang$html$Html_Events$defaultOptions,
+	{preventDefault: true});
+var _elm_lang$html$Html_Events$onSubmit = function (msg) {
+	return A3(
+		_elm_lang$html$Html_Events$onWithOptions,
+		'submit',
+		_elm_lang$html$Html_Events$onSubmitOptions,
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onCheck = function (tagger) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'change',
+		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$targetChecked));
+};
+var _elm_lang$html$Html_Events$onInput = function (tagger) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'input',
+		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$targetValue));
+};
+var _elm_lang$html$Html_Events$onMouseOut = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseout',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseOver = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseover',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseLeave = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseleave',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseEnter = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseenter',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseUp = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseup',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseDown = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mousedown',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onDoubleClick = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'dblclick',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onClick = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'click',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$Options = F2(
+	function (a, b) {
+		return {stopPropagation: a, preventDefault: b};
+	});
+
 var _evancz$url_parser$UrlParser$oneOfHelp = F3(
 	function (choices, chunks, formatter) {
 		oneOfHelp:
@@ -7622,60 +7723,183 @@ var _evancz$url_parser$UrlParser$format = F2(
 				}));
 	});
 
-var _user$project$App$view = function (model) {
-	return _elm_lang$html$Html$text(
-		_elm_lang$core$Basics$toString(model));
-};
-var _user$project$App$initialUrl = _elm_lang$core$Native_Platform.incomingPort('initialUrl', _elm_lang$core$Json_Decode$string);
-var _user$project$App$Model = function (a) {
-	return {page: a};
-};
+var _user$project$App$urlUpdate = _elm_lang$core$Native_Platform.incomingPort('urlUpdate', _elm_lang$core$Json_Decode$string);
+var _user$project$App$changeUrl = _elm_lang$core$Native_Platform.outgoingPort(
+	'changeUrl',
+	function (v) {
+		return v;
+	});
+var _user$project$App$Model = F2(
+	function (a, b) {
+		return {page: a, count: b};
+	});
 var _user$project$App$Blog = function (a) {
 	return {ctor: 'Blog', _0: a};
 };
 var _user$project$App$About = {ctor: 'About'};
+var _user$project$App$Home = {ctor: 'Home'};
+var _user$project$App$initialModel = {page: _user$project$App$Home, count: 0};
 var _user$project$App$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
-		if (_p0.ctor === 'NoMsg') {
-			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-		} else {
-			var _p2 = _p0._0;
-			var pathname$ = A2(_elm_lang$core$String$dropLeft, 1, _p2);
-			var pageParser = _evancz$url_parser$UrlParser$oneOf(
-				_elm_lang$core$Native_List.fromArray(
-					[
-						A2(
-						_evancz$url_parser$UrlParser$format,
-						_user$project$App$About,
-						_evancz$url_parser$UrlParser$s('about')),
-						A2(
-						_evancz$url_parser$UrlParser$format,
-						_user$project$App$Blog,
-						A2(
-							_evancz$url_parser$UrlParser_ops['</>'],
-							_evancz$url_parser$UrlParser$s('blog'),
-							_evancz$url_parser$UrlParser$int))
-					]));
-			var result = A3(_evancz$url_parser$UrlParser$parse, _elm_lang$core$Basics$identity, pageParser, pathname$);
-			var debug2 = A2(_elm_lang$core$Debug$log, 'result', result);
-			var debug = A2(_elm_lang$core$Debug$log, 'pathname', _p2);
-			var _p1 = result;
-			if (_p1.ctor === 'Ok') {
+		switch (_p0.ctor) {
+			case 'NoMsg':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'UrlUpdate':
+				var pathname$ = A2(_elm_lang$core$String$dropLeft, 1, _p0._0);
+				var pageParser = _evancz$url_parser$UrlParser$oneOf(
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_evancz$url_parser$UrlParser$format,
+							_user$project$App$About,
+							_evancz$url_parser$UrlParser$s('about')),
+							A2(
+							_evancz$url_parser$UrlParser$format,
+							_user$project$App$Blog,
+							A2(
+								_evancz$url_parser$UrlParser_ops['</>'],
+								_evancz$url_parser$UrlParser$s('blog'),
+								_evancz$url_parser$UrlParser$int)),
+							A2(
+							_evancz$url_parser$UrlParser$format,
+							_user$project$App$Home,
+							_evancz$url_parser$UrlParser$s('home')),
+							A2(
+							_evancz$url_parser$UrlParser$format,
+							_user$project$App$Home,
+							_evancz$url_parser$UrlParser$s(''))
+						]));
+				var result = A3(_evancz$url_parser$UrlParser$parse, _elm_lang$core$Basics$identity, pageParser, pathname$);
+				var x = A2(_elm_lang$core$Debug$log, 'result', result);
+				var _p1 = result;
+				if (_p1.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{page: _p1._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'ChangePage':
+				var _p3 = _p0._0;
+				var url = function () {
+					var _p2 = _p3;
+					switch (_p2.ctor) {
+						case 'Home':
+							return '/home';
+						case 'About':
+							return '/about';
+						default:
+							return A2(
+								_elm_lang$core$Basics_ops['++'],
+								'/blog/',
+								_elm_lang$core$Basics$toString(_p2._0));
+					}
+				}();
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{page: _p1._0}),
+						{page: _p3}),
+					_1: _user$project$App$changeUrl(url)
+				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{count: model.count + 1}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			} else {
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			}
 		}
 	});
-var _user$project$App$Home = {ctor: 'Home'};
-var _user$project$App$initialModel = {page: _user$project$App$Home};
+var _user$project$App$Increment = {ctor: 'Increment'};
+var _user$project$App$ChangePage = function (a) {
+	return {ctor: 'ChangePage', _0: a};
+};
+var _user$project$App$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Events$onClick(
+						_user$project$App$ChangePage(_user$project$App$Home))
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Home')
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Events$onClick(
+						_user$project$App$ChangePage(_user$project$App$About))
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('About')
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Events$onClick(
+						_user$project$App$ChangePage(
+							_user$project$App$Blog(1)))
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Blog 1')
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Events$onClick(
+						_user$project$App$ChangePage(
+							_user$project$App$Blog(2)))
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Blog 2')
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Events$onClick(
+						_user$project$App$ChangePage(
+							_user$project$App$Blog(3)))
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Blog 3')
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Events$onClick(_user$project$App$Increment)
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Increment')
+					])),
+				_elm_lang$html$Html$text(
+				_elm_lang$core$Basics$toString(model))
+			]));
+};
 var _user$project$App$UrlUpdate = function (a) {
 	return {ctor: 'UrlUpdate', _0: a};
 };
@@ -7683,7 +7907,7 @@ var _user$project$App$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$batch(
 		_elm_lang$core$Native_List.fromArray(
 			[
-				_user$project$App$initialUrl(
+				_user$project$App$urlUpdate(
 				function (url) {
 					return _user$project$App$UrlUpdate(url);
 				})
